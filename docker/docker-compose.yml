@@ -54,23 +54,6 @@ services:
         networks:
             - dapp_admin
 
-    # elasticsearch:
-    #     container_name: dapp-admin-elastic
-    #     image: 'elasticsearch:7.13.3'
-    #     ports:
-    #         - '9200:9200'
-    #     volumes:
-    #         - /usr/share/elasticsearch/data
-    #     environment:
-    #         - discovery.type=single-node
-    #         - TAKE_FILE_OWNERSHIP=true
-    #     ulimits:
-    #         memlock:
-    #             soft: -1
-    #             hard: -1
-    #     networks:
-    #         - dapp_admin
-
 networks:
   dapp_admin:
     driver: bridge
