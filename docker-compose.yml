@@ -1,0 +1,81 @@
+version: '3.8'
+
+services:
+    database:
+      container_name: dapp-admin-db
+      image: postgres:13.1
+      ports:
+        - 5432:5432
+      environment:
+        POSTGRES_DB: dapp_admin
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: postgres_pass
+      volumes:
+        - ./docker-files/db/init.sql:/docker-entrypoint-initdb.d
+      networks:
+        - dapp_admin
+
+    adminer:
+      container_name: dapp-admin-adminer
+      image: adminer
+      ports:
+        - 8080:8080  
+      networks:
+        - dapp_admin
+
+    nest:
+        container_name: dapp-admin-nest
+        image: nestjs-api-dev:1.0.0
+        build:
+            context: .
+            dockerfile: ./Dockerfile
+        command: npm run start:debug
+        ports:
+            - 3000:3000
+            # debugging port
+            - 9229:9229
+        volumes:
+          - /usr/src/app/node_modules
+          - type: bind
+            source: ./
+            target: /usr/src/app
+        restart: unless-stopped
+        links:
+          - database
+          # - elasticsearch
+        networks:
+          - dapp_admin
+
+    redis:
+        container_name: dapp-admin-redis
+        image: 'redis:alpine'
+        ports:
+            - 6379:6379
+        networks:
+            - dapp_admin
+
+    # elasticsearch:
+    #     container_name: dapp-admin-elastic
+    #     image: 'elasticsearch:7.13.3'
+    #     ports:
+    #         - '9200:9200'
+    #     volumes:
+    #         - /usr/share/elasticsearch/data
+    #     environment:
+    #         - discovery.type=single-node
+    #         - TAKE_FILE_OWNERSHIP=true
+    #     ulimits:
+    #         memlock:
+    #             soft: -1
+    #             hard: -1
+    #     networks:
+    #         - dapp_admin
+
+networks:
+  dapp_admin:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 175.0.0.0/24
+          gateway: 175.0.0.1

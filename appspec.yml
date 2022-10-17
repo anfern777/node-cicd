@@ -1,0 +1,27 @@
+version: 0.0
+os: linux
+files:
+  - source: /
+    destination: /home/ec2-user/api
+    overwrite: true
+permissions:
+  - object: /home/ec2-user/api
+    owner: ec2-user
+    group: ec2-user
+    mode: 4755
+    type: 
+      - file
+      - directory
+hooks:
+  BeforeInstall:
+    - location: codedeploy/BeforeInstallHook.sh
+      timeout: 300
+      runas: ec2-user
+  AfterInstall:
+    - location: codedeploy/AfterInstallHook.sh
+      timeout: 2000
+      runas: ec2-user
+  ValidateService:
+    - location: codedeploy/RefreshService.sh
+      timeout: 30
+      runas: root
