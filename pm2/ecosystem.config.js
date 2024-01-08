@@ -1,7 +1,7 @@
 module.exports = {
   apps: [
     {
-      name: 'metadex-admin-api',
+      name: '...',
       script: 'npm',
       args: 'start',
       watch: true,
